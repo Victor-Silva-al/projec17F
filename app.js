@@ -29,7 +29,32 @@ const NOME_TABELA = "songs"
 
 app.get('/api/songs', (req, res) => {
 
-  const myQuery = `SELECT * FROM ${NOME_TABELA}`
+  const genreQuery = req.query.genre;
+  const artistQuery = req.query.artist;
+  const likesQuery = req.query.likes;
+  const opQuery = req.query.op;
+
+  let myQuery = `SELECT * FROM ${NOME_TABELA}`;
+
+  if (genreQuery!=undefined){
+    myQuery = `SELECT * FROM ${NOME_TABELA} WHERE genre = "${genreQuery}"`;
+  } else if (artistQuery!=undefined){
+    myQuery = `SELECT * FROM ${NOME_TABELA} WHERE artist = "${artistQuery}"`;
+  } else if (likesQuery!=undefined){
+    myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes = "${likesQuery}"`;
+    
+    if (opQuery!="above"){
+      myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes < "${likesQuery}"`;  
+    }else if (opQuery!="under"){
+      myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes > "${likesQuery}"`;  
+    }else if (opQuery!="equal"){
+      myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes = "${likesQuery}"`;  
+    }
+
+  }
+
+  console.log(opQuery)
+  console.log(myQuery)
 
   connection.query(myQuery, (err, results) => {
 
@@ -135,7 +160,7 @@ app.put ('/api/price', (req, res)=> {
 
 app.get ('/api/songs/:id/revenue', (req, res)=> {
   const id = req.params.id;
-  const myQuery = (`Select likes FROM songs WHERE id = ${id}`);
+  const myQuery = (`Select likes FROM ${NOME_TABELA} WHERE id = ${id}`);
   connection.query(myQuery, (err, results) => {
 
     if (err) {
@@ -147,11 +172,69 @@ app.get ('/api/songs/:id/revenue', (req, res)=> {
   });
 });
 
-app.get ('/api/songs/:id/bands', (req, res)=> {
+app.get('/api/songs/:id/bands', (req, res) =>{;
+ 
   const id = req.params.id;
-  const myQuery = (`Select artist FROM songs WHERE id = ${id}`);
+
+  const myQuery = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+
+  connection.query(myQuery, (err, results) => {
+
+
+      if (err) {
+          return res.status(500).send('Erro ao buscar artista: ' + err.message);
+      }
+
+
+      if (results.length !== 0){
+          for (let i=0; i < bands.length; i++){
+
+              if (bands[i].artist == results[0].artist){
+                  res.json(bands[i]);
+                  return;
+              }
+          }
+
+          res.status(404).send('Artista não encontrado na banda')
+
+      }else{
+         
+          res.status(404).send('Artista não encontrado na base de dados')
+
+      }
+     
+  });
+ 
+
 });
 
+
+app.post('/api/songs/:id/bands', (req, res) =>{;
+
+  const id = req.params.id;
+  const band_members = req.body.band_members;
+
+  const myQuery = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+
+  connection.query(myQuery, (err, results) => {
+
+      if (err) {
+          return res.status(500).send('Erro ao buscar artista: ' + err.message);
+      }
+
+      const Banda = {
+         
+          "artist": results[0].artist,
+          "band_members": band_members
+      }
+     
+      bands.push(Banda);
+
+      res.sendStatus(200);
+
+  });
+
+});
 
 // Criar o servidor HTTP
 app.listen(port, () => {
