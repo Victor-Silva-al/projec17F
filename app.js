@@ -43,18 +43,15 @@ app.get('/api/songs', (req, res) => {
   } else if (likesQuery!=undefined){
     myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes = "${likesQuery}"`;
     
-    if (opQuery!="above"){
-      myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes < "${likesQuery}"`;  
-    }else if (opQuery!="under"){
+    if (opQuery=="above"){
       myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes > "${likesQuery}"`;  
-    }else if (opQuery!="equal"){
+    }else if (opQuery=="under"){
+      myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes < "${likesQuery}"`;  
+    }else if (opQuery=="equal"){
       myQuery = `SELECT * FROM ${NOME_TABELA} WHERE likes = "${likesQuery}"`;  
     }
 
   }
-
-  console.log(opQuery)
-  console.log(myQuery)
 
   connection.query(myQuery, (err, results) => {
 
@@ -172,17 +169,36 @@ app.get ('/api/songs/:id/revenue', (req, res)=> {
   });
 });
 
-app.get('/api/songs/:id/bands', (req, res) =>{;
+const bands = [
  
+  {
+      "artist" : "Queen",
+      "band_members" : ["Freddie Mercury", "Brian May", "Roger Taylor", "John Deacon"]
+  },
+
+  {
+    "artist" : "Avenged Sevenfold",
+    "band_members" : ["M. Shadows", "Zacky Vengeance", "Synyster Gates", "Johnny Christ", "Brooks Wackerman"]
+  },
+  
+  {
+      "artist" : "Matuê",
+      "band_members" : ["Matuê"]
+  }
+
+]
+
+app.get('/api/songs/:id/band', (req, res) =>{;
+
   const id = req.params.id;
 
-  const myQuery = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+  const myQuery = `SELECT artist FROM songs where id="${id}"`
 
   connection.query(myQuery, (err, results) => {
 
 
       if (err) {
-          return res.status(500).send('Erro ao buscar artista: ' + err.message);
+          return res.status(500).send('Erro ao buscar songs: ' + err.message);
       }
 
 
@@ -191,6 +207,7 @@ app.get('/api/songs/:id/bands', (req, res) =>{;
 
               if (bands[i].artist == results[0].artist){
                   res.json(bands[i]);
+                  console.log(bands)
                   return;
               }
           }
@@ -204,37 +221,129 @@ app.get('/api/songs/:id/bands', (req, res) =>{;
       }
      
   });
- 
-
 });
 
 
-app.post('/api/songs/:id/bands', (req, res) =>{;
+app.post('/api/songs/:id/band', (req, res) =>{;
 
   const id = req.params.id;
   const band_members = req.body.band_members;
 
-  const myQuery = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+  const myQuery = `SELECT artist FROM songs where id="${id}"`
 
   connection.query(myQuery, (err, results) => {
 
       if (err) {
-          return res.status(500).send('Erro ao buscar artista: ' + err.message);
+          return res.status(500).send('Erro ao buscar songs: ' + err.message);
       }
 
-      const Banda = {
+      const banda = {
          
           "artist": results[0].artist,
           "band_members": band_members
       }
      
-      bands.push(Banda);
+      if (banda.artist)
+      bands.push(banda);
 
       res.sendStatus(200);
 
   });
 
 });
+
+app.put('/api/songs/:id/band', (req, res) =>{;
+
+  const id = req.params.id;
+
+  const myQuery = `SELECT artist FROM songs where id="${id}"`
+
+  connection.query(myQuery, (err, results) => {
+
+
+      if (err) {
+          return res.status(500).send('Erro ao buscar songs: ' + err.message);
+      }
+
+
+      if (results.length !== 0){
+          for (let i=0; i < bands.length; i++){
+
+              if (bands[i].artist == results[0].artist){
+                  bands[i].band_members = req.body.band_members;
+                  return res.sendStatus(200);
+              }
+          }
+
+          res.status(404).send('Artista não encontrado na banda')
+
+      }else{
+         
+          res.status(404).send('Artista não encontrado na base de dados')
+
+      }
+     
+  });
+});
+
+app.delete('/api/songs/:id/band', (req, res) =>{;
+
+  const id = req.params.id;
+
+  const myQuery = `SELECT artist FROM songs where id="${id}"`
+
+  connection.query(myQuery, (err, results) => {
+
+
+      if (err) {
+          return res.status(500).send('Erro ao buscar songs: ' + err.message);
+      }
+
+
+      if (results.length !== 0){
+          for (let i=0; i < bands.length; i++){
+
+              if (bands[i].artist == results[0].artist){
+                  bands.splice(i);
+                  return res.sendStatus(200);
+              }
+          }
+
+          res.status(404).send('Artista não encontrado na banda')
+
+      }else{
+         
+          res.status(404).send('Artista não encontrado na base de dados')
+
+      }
+     
+  });
+});
+
+/* app.post('/api/songs/bulk', (req, res) => {
+  const title = req.body.title;
+  const artist = req.body.artist;
+  const album = req.body.album;
+  const genre = req.body.genre;
+  const duration_secs = req.body.duration_secs;
+  const release_date = req.body.release_date;
+  const likes = req.body.likes;
+
+  if (!title || !artist || !album || !genre || !duration_secs || !release_date || !likes) {
+    return res.status(400).send('Campos obrigatórios: title, artist, album, genre, duration_secs, release_date, likes');
+  }
+
+  for (let i=0; i < ; i++){
+  const query = `INSERT INTO  songs (title, artist, album, genre, duration_secs, release_date, likes) VALUES ("${title}", "${artist}", "${album}", "${genre}", "${duration_secs}", "${release_date}", "${likes}")`;
+  }
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).send('Erro ao adicionar música: ' + err.message);
+    }
+    res.status(200).send('Música adicionada com sucesso!');
+  });
+}); */
 
 // Criar o servidor HTTP
 app.listen(port, () => {
