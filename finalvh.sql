@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 17, 2025 at 07:04 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Tempo de geração: 20-Jan-2025 às 13:02
+-- Versão do servidor: 10.4.32-MariaDB
+-- versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `finalvh`
+-- Banco de dados: `finalvh`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `songs`
+-- Estrutura da tabela `songs`
 --
 
 CREATE TABLE `songs` (
@@ -40,34 +40,36 @@ CREATE TABLE `songs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `songs`
+-- Extraindo dados da tabela `songs`
 --
 
 INSERT INTO `songs` (`id`, `title`, `artist`, `album`, `genre`, `duration_secs`, `release_date`, `likes`, `created_at`) VALUES
 (1, 'Requiem', 'Avenged Sevenfold', 'Hail to the King', 'Rock/Metal', '461', '2013-08-23', 28676178, '2025-01-10 14:56:27'),
 (2, '333', 'Matuê', '333', 'Trap', '321', '2024-09-09', 190000, '2025-01-10 15:57:26'),
 (3, 'Gunslinger', 'Avenged Sevenfold', 'Avenged Sevenfold', 'Rock/Metal', '252', '2007-10-30', 127165539, '2025-01-10 16:22:40'),
-(4, 'I Want to Break Free', 'Queen', 'The Works', 'Rock', '272', '1984-04-02', 4000000, '2025-01-17 16:54:00');
+(4, 'I Want to Break Free', 'Queen', 'The Works', 'Rock', '272', '1984-04-02', 4000000, '2025-01-17 16:54:00'),
+(5, '3S', 'Ryu, The Runner', '3S', 'Trap', '136', '2024-02-05', 91000, '2025-01-20 11:36:35'),
+(6, 'Sofrendo com Insônia', 'Emitê Único', 'Sofrendo com Insônia', 'Trap', '136', '2023-11-07', 26000, '2025-01-20 11:36:35');
 
 --
--- Indexes for dumped tables
+-- Índices para tabelas despejadas
 --
 
 --
--- Indexes for table `songs`
+-- Índices para tabela `songs`
 --
 ALTER TABLE `songs`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT for table `songs`
+-- AUTO_INCREMENT de tabela `songs`
 --
 ALTER TABLE `songs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -207,7 +207,6 @@ app.get('/api/songs/:id/band', (req, res) =>{;
 
               if (bands[i].artist == results[0].artist){
                   res.json(bands[i]);
-                  console.log(bands)
                   return;
               }
           }
@@ -231,6 +230,7 @@ app.post('/api/songs/:id/band', (req, res) =>{;
 
   const myQuery = `SELECT artist FROM songs where id="${id}"`
 
+
   connection.query(myQuery, (err, results) => {
 
       if (err) {
@@ -242,7 +242,7 @@ app.post('/api/songs/:id/band', (req, res) =>{;
           "artist": results[0].artist,
           "band_members": band_members
       }
-     
+
       if (banda.artist)
       bands.push(banda);
 
@@ -320,30 +320,36 @@ app.delete('/api/songs/:id/band', (req, res) =>{;
   });
 });
 
-/* app.post('/api/songs/bulk', (req, res) => {
-  const title = req.body.title;
-  const artist = req.body.artist;
-  const album = req.body.album;
-  const genre = req.body.genre;
-  const duration_secs = req.body.duration_secs;
-  const release_date = req.body.release_date;
-  const likes = req.body.likes;
+app.post('/api/songs/bulk', (req, res) => {
+  for(let i=0; req.body.length>i; i++){
+    const title = req.body[i].title;
+    const artist = req.body[i].artist;
+    const album = req.body[i].album;
+    const genre = req.body[i].genre;
+    const duration_secs = req.body[i].duration_secs;
+    const release_date = req.body[i].release_date;
+    const likes = req.body[i].likes; 
+  
 
-  if (!title || !artist || !album || !genre || !duration_secs || !release_date || !likes) {
-    return res.status(400).send('Campos obrigatórios: title, artist, album, genre, duration_secs, release_date, likes');
-  }
+    if (!title || !artist || !album || !genre || !duration_secs || !release_date || !likes) {
+      return res.status(400).send('Campos obrigatórios: title, artist, album, genre, duration_secs, release_date, likes');
+    };
 
-  for (let i=0; i < ; i++){
-  const query = `INSERT INTO  songs (title, artist, album, genre, duration_secs, release_date, likes) VALUES ("${title}", "${artist}", "${album}", "${genre}", "${duration_secs}", "${release_date}", "${likes}")`;
-  }
+    const query = `INSERT INTO  songs (title, artist, album, genre, duration_secs, release_date, likes) VALUES ("${title}", "${artist}", "${album}", "${genre}", "${duration_secs}", "${release_date}", "${likes}")`;
+  
+    connection.query(query, (err, results) => {
 
-  connection.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).send('Erro ao adicionar música: ' + err.message);
-    }
-    res.status(200).send('Música adicionada com sucesso!');
-  });
-}); */
+      if (err) {
+        return res.status(500).send('Erro ao adicionar música: ' + err.message);
+      }
+
+    });
+
+  };
+
+  res.status(200).send('Música adicionada com sucesso!');
+
+});
 
 // Criar o servidor HTTP
 app.listen(port, () => {
